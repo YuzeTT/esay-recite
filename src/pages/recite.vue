@@ -1,7 +1,12 @@
 <script setup lang="ts">
+// import { BaseDirectory, readTextFile } from '@tauri-apps/api/fs'
+// import type confetti from '@types/canvas-confetti'
+import confetti from 'canvas-confetti'
 defineOptions({
   name: 'Recite',
 })
+
+// const confetti = require('canvas-confetti')
 
 const router = useRouter()
 const count = ref(0)
@@ -13,11 +18,13 @@ const answer_show_button = ref(false)
 const answer_show_status = ref(false)
 const next_button = ref(false)
 const input = ref('')
+const text_data = ref()
+// const text = ref()
 
-const text = [
-  '东皋薄暮望 徙倚欲何依 树树皆秋色 山山唯落晖',
-  '树树皆秋色 山山唯落晖',
-]
+// const text = [
+//   '东皋薄暮望 徙倚欲何依 树树皆秋色 山山唯落晖',
+//   '树树皆秋色 山山唯落晖',
+// ]
 
 // const blockText = () => {
 //   const data = text[count.value]
@@ -29,7 +36,7 @@ const text = [
 // }
 
 const get = () => {
-  const data = text[count.value]
+  const data = text_data.value[count.value]
   const text_split = data.split(' ')
   answer_num.value = Math.floor(Math.random() * text_split.length) + 1
   question.value = text_split
@@ -62,13 +69,24 @@ const next = () => {
   next_button.value = false
   count.value += 1
   input.value = ''
-  if (count.value <= text.length - 1)
+  if (count.value <= text_data.value.length - 1) {
     get()
-  else
+  }
+  else {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+    })
     router.push('/')
+  }
 }
 
-get()
+onBeforeMount(async () => {
+  text_data.value = useStorage('data', '东皋薄暮望 徙倚欲何依 树树皆秋色 山山唯落晖').value.split('\n')
+  // text.value = await (await readTextFile('data.txt', { dir: BaseDirectory.AppConfig })).split('\n')
+  get()
+})
 </script>
 
 <template>
@@ -129,7 +147,7 @@ get()
         </button>
       </div>
     </div>
-    <div mt-5 p-5 rounded-xl border-2 border-zinc-300 flex justify-between items-center>
+    <div mt-5 p-5 rounded-xl border-2 border-zinc-300 dark:border-zinc-800 flex justify-between items-center>
       <div text-2xl>
         <div>
           输入：

@@ -3,6 +3,6 @@
     <button icon-btn @click="toggleDark()">
       <div dark:i-carbon-moon i-carbon-sun />
     </button>
-    <div>v0.1.0</div>
+    <div>v0.1.1</div>
   </nav>
 </template>

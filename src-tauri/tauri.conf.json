@@ -12,7 +12,11 @@
   },
   "tauri": {
     "allowlist": {
-      "all": false
+      "all": false,
+      "fs": {
+        "all": true,
+        "scope": ["$APPDATA/*"]
+      }
     },
     "bundle": {
       "active": true,
@@ -29,7 +33,7 @@
         "icons/icon.icns",
         "icons/icon.ico"
       ],
-      "identifier": "cn.hsott.esay",
+      "identifier": "cn.hsott.easy",
       "longDescription": "",
       "macOS": {
         "entitlements": null,
