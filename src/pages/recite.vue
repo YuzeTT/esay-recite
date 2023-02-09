@@ -8,13 +8,15 @@ const count = ref(0)
 const question = ref()
 // const answer = ref('')
 const answer_num = ref(0)
+const answer_show = ref(false)
+const answer_show_button = ref(false)
+const answer_show_status = ref(false)
+const next_button = ref(false)
 const input = ref('')
 
 const text = [
   '东皋薄暮望 徙倚欲何依 树树皆秋色 山山唯落晖',
   '树树皆秋色 山山唯落晖',
-  '牧人驱犊返 猎马带禽归',
-  '相顾无相识 长歌怀采薇',
 ]
 
 // const blockText = () => {
@@ -34,14 +36,36 @@ const get = () => {
 }
 
 const submit = () => {
-  input.value = ''
-  if (count.value < text.length - 1) {
-    count.value++
-    get()
+  // 判断答案
+  if (input.value === question.value[answer_num.value - 1]) {
+    answer_show_button.value = false
+    answer_show.value = true
+    answer_show_status.value = true
+    next_button.value = true
   }
   else {
-    router.push('/')
+    answer_show_button.value = true
+    answer_show_status.value = true
   }
+}
+
+const check = (text: string, i: number) => {
+  return question.value[answer_num.value - 1]
+    .split('')
+    .find((t: string) => t === text)
+}
+
+const next = () => {
+  answer_show_button.value = false
+  answer_show.value = false
+  answer_show_status.value = false
+  next_button.value = false
+  count.value += 1
+  input.value = ''
+  if (count.value <= text.length - 1)
+    get()
+  else
+    router.push('/')
 }
 
 get()
@@ -87,16 +111,39 @@ get()
         </div>
       </div>
       <!-- {{ question }} -->
-      <button flex items-center mx-auto gap-2 bg-blue-500 px-5 py-2 text-white rounded-full text-2xl mt-10 @click="submit()">
-        <!-- <div i-carbon-checkmark /> -->
-        提交
-        <div i-carbon-send-filled />
-      </button>
+      <div mt-10>
+        <button v-if="!next_button" flex items-center mx-auto gap-2 bg-blue-500 px-5 py-2 text-white rounded-full text-2xl @click="submit()">
+          <!-- <div i-carbon-checkmark /> -->
+          提交
+          <div i-carbon-send-filled />
+        </button>
+        <button v-else flex items-center mx-auto gap-2 bg-emerald-500 px-5 py-2 text-white rounded-full text-2xl @click="next()">
+          <!-- <div i-carbon-checkmark /> -->
+          下一题
+          <div i-carbon-send-filled />
+        </button>
+        <button v-if="answer_show_button" flex items-center mx-auto gap-2 bg-orange-500 px-5 py-2 text-white rounded-full text-2xl mt-5 @click="answer_show = true">
+          <!-- <div i-carbon-checkmark /> -->
+          看答案
+          <div i-carbon-ai-results />
+        </button>
+      </div>
     </div>
-    <div mt-5 border-2 border-zinc-300 p-5 rounded-xl>
+    <div mt-5 p-5 rounded-xl border-2 border-zinc-300 flex justify-between items-center>
       <div text-2xl>
-        <div>输入：{{ input }}</div>
-        <div>答案：{{ question[answer_num - 1] }}</div>
+        <div>
+          输入：
+          <span v-for="(item, i) in input" :key="i" :class="check(item, i) ? 'text-emerald-600' : 'text-red-600'">{{ item }}</span>
+        </div>
+        <div>答案： {{ answer_show ? question[answer_num - 1] : '提交后查看' }}</div>
+      </div>
+      <div v-if="answer_show_status" text-6xl font-bold>
+        <div v-if="input === question[answer_num - 1]" text-emerald-500>
+          😀正确
+        </div>
+        <div v-else text-red-500>
+          😔错误
+        </div>
       </div>
     </div>
   </div>
