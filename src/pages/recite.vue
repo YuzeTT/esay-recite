@@ -14,6 +14,7 @@ const answer_show_status = ref(false)
 const next_button = ref(false)
 const input = ref('')
 const text_data = ref()
+const { _, copy, copied, isSupported } = useClipboard()
 
 const get = () => {
   const data = text_data.value[count.value]
@@ -116,13 +117,21 @@ onBeforeMount(async () => {
           提交
           <div i-carbon-send-filled />
         </button>
-        <button v-else flex items-center mx-auto gap-2 bg-emerald-500 px-5 py-2 text-white rounded-full text-2xl @click="next()">
-          <!-- <div i-carbon-checkmark /> -->
-          下一题
-          <div i-carbon-send-filled />
-        </button>
+        <div v-else-if="isSupported" flex items-center justify-center gap-5>
+          <div>
+            <button flex items-center mx-auto gap-2 bg-blue-500 px-5 py-2 text-white rounded-full text-2xl @click="copy(text_data[count])">
+              <span v-if="!copied" flex items-center gap-2><div i-carbon-copy />复制</span>
+              <span v-else flex items-center gap-2><div i-carbon-checkmark />复制成功</span>
+            </button>
+          </div>
+          <div>
+            <button flex items-center mx-auto gap-2 bg-emerald-500 px-5 py-2 text-white rounded-full text-2xl @click="next()">
+              下一题
+              <div i-carbon-send-filled />
+            </button>
+          </div>
+        </div>
         <button v-if="answer_show_button" flex items-center mx-auto gap-2 bg-orange-500 px-5 py-2 text-white rounded-full text-2xl mt-5 @click="answer_show = true">
-          <!-- <div i-carbon-checkmark /> -->
           看答案
           <div i-carbon-ai-results />
         </button>
