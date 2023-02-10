@@ -1,17 +1,12 @@
 <script setup lang="ts">
-// import { BaseDirectory, readTextFile } from '@tauri-apps/api/fs'
-// import type confetti from '@types/canvas-confetti'
 import confetti from 'canvas-confetti'
 defineOptions({
   name: 'Recite',
 })
 
-// const confetti = require('canvas-confetti')
-
 const router = useRouter()
 const count = ref(0)
 const question = ref()
-// const answer = ref('')
 const answer_num = ref(0)
 const answer_show = ref(false)
 const answer_show_button = ref(false)
@@ -19,21 +14,6 @@ const answer_show_status = ref(false)
 const next_button = ref(false)
 const input = ref('')
 const text_data = ref()
-// const text = ref()
-
-// const text = [
-//   '东皋薄暮望 徙倚欲何依 树树皆秋色 山山唯落晖',
-//   '树树皆秋色 山山唯落晖',
-// ]
-
-// const blockText = () => {
-//   const data = text[count.value]
-//   const text_split = data.split(' ')
-//   answer_num.value = Math.floor(Math.random() * 2)
-//   answer.value = text_split[answer_num.value]
-//   // text_split[answer_num.value] = ''.padEnd(answer.value.length * 2, '_')
-//   return text_split
-// }
 
 const get = () => {
   const data = text_data.value[count.value]
@@ -56,12 +36,14 @@ const submit = () => {
   }
 }
 
+// 错别字判断
 const check = (text: string, i: number) => {
   return question.value[answer_num.value - 1]
     .split('')
     .find((t: string) => t === text)
 }
 
+// 下一题
 const next = () => {
   answer_show_button.value = false
   answer_show.value = false
@@ -69,6 +51,7 @@ const next = () => {
   next_button.value = false
   count.value += 1
   input.value = ''
+  // 判断是否还有题
   if (count.value <= text_data.value.length - 1) {
     get()
   }
@@ -84,7 +67,6 @@ const next = () => {
 
 onBeforeMount(async () => {
   text_data.value = useStorage('data', '东皋薄暮望 徙倚欲何依 树树皆秋色 山山唯落晖').value.split('\n')
-  // text.value = await (await readTextFile('data.txt', { dir: BaseDirectory.AppConfig })).split('\n')
   get()
 })
 </script>
@@ -128,7 +110,6 @@ onBeforeMount(async () => {
           {{ item }}
         </div>
       </div>
-      <!-- {{ question }} -->
       <div mt-10>
         <button v-if="!next_button" flex items-center mx-auto gap-2 bg-blue-500 px-5 py-2 text-white rounded-full text-2xl @click="submit()">
           <!-- <div i-carbon-checkmark /> -->
@@ -147,6 +128,7 @@ onBeforeMount(async () => {
         </button>
       </div>
     </div>
+
     <div mt-5 p-5 rounded-xl border-2 border-zinc-300 dark:border-zinc-800 flex justify-between items-center>
       <div text-2xl>
         <div>
@@ -155,18 +137,28 @@ onBeforeMount(async () => {
         </div>
         <div>答案： {{ answer_show ? question[answer_num - 1] : '提交后查看' }}</div>
       </div>
-      <div v-if="answer_show_status" text-6xl font-bold>
-        <div v-if="input === question[answer_num - 1]" text-emerald-500>
-          😀正确
+      <Transition>
+        <div v-if="answer_show_status" text-6xl font-bold>
+          <div v-if="input === question[answer_num - 1]" text-emerald-500>
+            😀正确
+          </div>
+          <div v-else text-red-500>
+            😔错误
+          </div>
         </div>
-        <div v-else text-red-500>
-          😔错误
-        </div>
-      </div>
+      </Transition>
     </div>
   </div>
 </template>
 
 <style scoped>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.3s ease;
+}
 
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
 </style>

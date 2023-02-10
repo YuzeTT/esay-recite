@@ -1,15 +1,14 @@
 <script setup lang="ts" generic="T extends any, O extends any">
-// import { BaseDirectory, o } from '@tauri-apps/api/fs'
 import { useStorage } from '@vueuse/core'
 defineOptions({
   name: 'IndexPage',
 })
 
 const router = useRouter()
-
 const nowTime = new Date()
 const h = nowTime.getHours()
 const data_text = '东皋薄暮望 徙倚欲何依 树树皆秋色 山山唯落晖\n牧人驱犊返 猎马带禽归  相顾无相识  长歌怀采薇\n昔人已乘黄鹤去 此地空余黄鹤楼  黄鹤一去不复返 白云千载空悠悠'
+const data = useStorage('data', data_text)
 // @unocss-include
 const time_list = [
   ['夜已深，注意休息哦！', 'i-carbon-haze-night'], // 0,1,2
@@ -21,6 +20,8 @@ const time_list = [
   ['晚上好呀！掐指一算现在适合复习！', 'i-carbon-face-cool'], // 18,19,20
   ['累了一天吧，该睡觉咯~', 'i-carbon-mostly-cloudy-night'], // 21,22,23
 ]
+
+// 获取问好消息
 const getMsg = () => {
   switch (h) {
     case 12:
@@ -29,8 +30,6 @@ const getMsg = () => {
       return time_list[Math.floor(h / 3)]
   }
 }
-
-const data = useStorage('data', data_text)
 </script>
 
 <template>
@@ -39,24 +38,6 @@ const data = useStorage('data', data_text)
       <div :class="getMsg()[1]" text-blue-500 />
       <div>{{ getMsg()[0] }}</div>
     </div>
-    <!-- <div flex justify-around my-5 text-center>
-      <div>
-        <div text-5xl>
-          50
-        </div>
-        <div text-xl text-gray-500>
-          待背诵
-        </div>
-      </div>
-      <div>
-        <div text-5xl>
-          10
-        </div>
-        <div text-xl text-gray-500>
-          已背诵
-        </div>
-      </div>
-    </div> -->
     <div my-15 text-center>
       <button w-50 h-20 bg-blue-500 rounded-xl text-white text-4xl @click="router.push('/recite')">
         开始背诵
